@@ -2,7 +2,7 @@ package tokenization.classes
 
 import java.time.LocalDate
 
-class Student(id: String, firstName: String, lastName: String, dateOfBirth: LocalDate, email: String,phoneNumber: String, var mpBalance: BigDecimal = 0, var enrolledCourses: List[Course] = List.empty, var grades: Map[String, Int] = Map.empty) extends Human(id, firstName, lastName, dateOfBirth, email, phoneNumber) {
+class Student(id: String, firstName: String, lastName: String, dateOfBirth: LocalDate, email: String,phoneNumber: String, token:Token,  var mpBalance: BigDecimal = 0, var enrolledCourses: List[Course] = List.empty, var grades: Map[String, Int] = Map.empty) extends Human(id, firstName, lastName, dateOfBirth, email, phoneNumber, token) {
 
   def addCourse(course: Course): Unit =
     enrolledCourses = enrolledCourses :+ course
