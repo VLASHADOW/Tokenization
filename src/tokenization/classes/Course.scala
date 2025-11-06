@@ -1,6 +1,5 @@
 package tokenization.classes
 
-case class Course(id: String, title: String, credits: Int) {
-
+class Course(val id: String, val title: String, val credits: Int) {
   override def toString: String = s"$id: $title ($credits credits)"
 }

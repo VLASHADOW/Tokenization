@@ -12,6 +12,12 @@ class Teacher(id: String, firstName: String, lastName: String, dateOfBirth: Loca
       if (coursesTaught.isEmpty) "no courses"
       else coursesTaught.map(c => s"${c.id} - ${c.title}").mkString(", ")
 
-    s"-------------------------------------------------------------------\n$firstName $lastName, $age years.\nCourses: $teacherCourseNames.\nContacts: $email, $phoneNumber."
+    s"""-------------------------------------------------------------------
+    $firstName $lastName,
+    $age years.
+    Token: ${token.amount}.
+    Courses: $teacherCourseNames.
+    Contacts: $email, $phoneNumber.
+    """.stripMargin
   }
 }

@@ -15,6 +15,12 @@ class Student(id: String, firstName: String, lastName: String, dateOfBirth: Loca
       if (enrolledCourses.isEmpty) "no courses"
       else enrolledCourses.map(c => s"${c.id} - ${c.title}").mkString(", ")
 
-    s"-------------------------------------------------------------------\n$firstName $lastName, $age years, $mpBalance.\nCourses: $studentCourseNames.\nGrades: $grades.\nContacts: $email, $phoneNumber."
+    s"""-------------------------------------------------------------------
+    $firstName $lastName,
+    $age years, $mpBalance
+    Courses: $studentCourseNames.
+    Grades: $grades
+    Contacts: $email, $phoneNumber.
+    """.stripMargin
   }
 }
