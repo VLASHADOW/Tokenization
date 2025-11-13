@@ -26,4 +26,6 @@ class Token(var amount:Int, var symb:String) {
     else
       throw new IllegalArgumentException("Not match token symb!")
   }
+
+  override def toString: String = s"${_amount}${_symb}"
 }

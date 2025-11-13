@@ -1,50 +1,44 @@
 package tokenization
 
-import tokenization.classes.{Course, Human, Student, Teacher, Token}
-import tokenization.objects.{CourseAssigner, Exchange, ListCourses, ListStudent, ListTeacher, TokenizationLogic}
+import tokenization.classes.Token
+import tokenization.objects._
 
 import scala.util.Random
 
 object Tokenization {
   def main(args: Array[String]): Unit = {
+    Exchange.init(1000000.0, new Token(1000000, "USD"))
+
     val students = ListStudent.students
     val teachers = ListTeacher.teachers
     val courses = ListCourses.courses
 
-    println("=== Teachers ===")
+    println("\n=== Початковий стан ===")
     teachers.foreach(t => println(t.displayInfo()))
-
-    println("\n=== Students ===")
     students.foreach(s => println(s.displayInfo()))
 
-    println("\n=== Enrolling all students ===")
-
-    students.foreach { student =>
+    println("\n=== Реєстрація студентів на курси ===")
+    students.foreach { s =>
       val course = Random.shuffle(courses).head
-      val teacherOpt = teachers.find(_.coursesTaught.exists(_.id == course.id))
-      teacherOpt match {
-        case Some(teacher) => student.enrollToCourse(course, teacher)
-        case None => println(s"Для курсу ${course.title} немає викладача.")
+      val teacher = teachers.find(_.coursesTaught.contains(course))
+      teacher.foreach(t => EnrollmentService.enrollStudentToCourse(s, t, course))
+    }
+
+    println("\n=== Викладачі виставляють оцінки ===")
+    teachers.foreach { t =>
+      t.coursesTaught.foreach { c =>
+        val enrolled = students.filter(_.enrolledCourses.contains(c))
+        enrolled.foreach(st => t.gradeStudent(st, c, Random.between(60, 100)))
       }
     }
 
-    println("\n=== Grading students ===")
-
-    teachers.foreach { teacher =>
-      students.foreach { student =>
-        teacher.coursesTaught.foreach { course =>
-          if (student.enrolledCourses.exists(_.id == course.id)) {
-            val grade = Random.between(60, 101)
-            teacher.gradeStudent(student, course, grade)
-          }
-        }
-      }
-    }
-
-    println("\n=== Final student info ===")
+    println("\n=== Інформація перед стипендіями ===")
     students.foreach(s => println(s.displayInfo()))
 
-    println("\n=== Final teacher info ===")
-    teachers.foreach(t => println(t.displayInfo()))
+    ScholarshipService.distributeScholarships(students)
+
+    println("\n=== Після стипендій ===")
+    students.foreach(s => println(s.displayInfo()))
+    println(s"\nФінальний баланс платформи: ${Platform.getBalance}")
   }
 }

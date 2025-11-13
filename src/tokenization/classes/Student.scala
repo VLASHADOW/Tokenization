@@ -1,5 +1,7 @@
 package tokenization.classes
 
+import tokenization.objects.TokenizationLogic
+
 import java.time.LocalDate
 
 class Student(
@@ -24,13 +26,14 @@ class Student(
   def enrollToCourse(course: Course, teacher: Teacher): Unit = {
     if (enrolledCourses.exists(_.id == course.id)) {
       println(s"$firstName вже записаний на курс ${course.title}.")
-    } else if (token.Amount >= course.price) {
-      token = token - new Token(course.price, token.Symb)
-      teacher.token = teacher.token + new Token(course.price, token.Symb)
-      enrolledCourses = enrolledCourses :+ course
-      println(s"$firstName успішно записався на курс '${course.title}' за ${course.price}${token.Symb}.")
     } else {
-      println(s"$firstName не має достатньо токенів для курсу '${course.title}'.")
+      val paymentSuccessful = TokenizationLogic.payForCourse(this, teacher, course.price)
+      if (paymentSuccessful) {
+        enrolledCourses = enrolledCourses :+ course
+        println(s"$firstName успішно записався на курс '${course.title}'.")
+      } else {
+        println(s"$firstName не вдалося записатися на курс '${course.title}' через недостатньо токенів.")
+      }
     }
   }
 
@@ -41,7 +44,7 @@ class Student(
 
     s"""-------------------------------------------------------------------
        |$firstName $lastName,
-       |Age: $age years, Tokens: ${token.Amount}${token.Symb}
+       |Age: $age years, Tokens: $token
        |Courses: $studentCourseNames
        |Grades: $grades
        |Contacts: $email, $phoneNumber
