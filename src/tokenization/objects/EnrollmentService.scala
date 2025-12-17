@@ -3,12 +3,11 @@ package tokenization.objects
 import tokenization.classes.{Course, Student, Teacher, Token}
 
 object EnrollmentService {
-  def enrollStudentToCourse(student: Student, teacher: Teacher, course: Course): Boolean = {
+  def enrollStudentToCourse(student: Student, teacher: Teacher, course: Course): Boolean = this.synchronized {
     val cost = new Token(course.price, "USD")
 
     if (student.GetToken.Amount < cost.Amount) {
       val diff = cost.Amount - student.GetToken.Amount
-      println(s"${student.firstName} не має достатньо токенів. Купує $diff${cost.Symb} з біржі.")
       student.Buy(new Token(diff, "USD"))
     }
 
@@ -16,11 +15,14 @@ object EnrollmentService {
       student.token = student.GetToken - cost
       teacher.token = teacher.GetToken + cost
       Platform.addRevenue(cost)
+
       student.addCourse(course)
-      println(s"${student.firstName} успішно купив курс ${course.title} у ${teacher.firstName}.")
+
+      println(s"[Thread-${Thread.currentThread().getId}] ${student.firstName} успішно записався на курс '${course.title}'.")
       true
-    } else {
-      println(s"${student.firstName} все ще не має достатньо токенів для покупки курсу ${course.title}.")
+    }
+    else {
+      println(s"[Thread-${Thread.currentThread().getId}] ПОМИЛКА: ${student.firstName} не зміг оплатити курс.")
       false
     }
   }

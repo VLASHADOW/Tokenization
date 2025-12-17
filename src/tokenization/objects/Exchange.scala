@@ -8,31 +8,33 @@ object Exchange extends Trading {
   private var _token: Token = _
   private var _initial: Boolean = false
 
-  def init(fiat:Double, token:Token): Unit = {
-    if(!_initial) {
+  def init(fiat: Double, token: Token): Unit = this.synchronized {
+    if (!_initial) {
       this._fiat = fiat
       this._token = token
       this._initial = true
+    } else {
+      println("Exchange already initialized.")
     }
-    else {
-      println("...")
+  }
+
+  def GetTokenPrice(): Double = this.synchronized {
+    _token.Amount / this._fiat
+  }
+
+  override def Buy(arg: Token): Unit = this.synchronized {
+    if (_token.Amount >= arg.Amount) {
+      val newAmount = _token.Amount - arg.Amount
+      _token = new Token(newAmount, _token.Symb)
+
+      _fiat = _fiat + (arg.Amount * (_token.Amount.toDouble / _fiat))
+    } else {
+      println("Exchange: Not enough tokens!")
     }
   }
 
-  def GetTokenPrice(): Double = _token.Amount / this._fiat
-  def GetInf(): (Double, String) = (_fiat, _token.TokenInfo())
-
-  override def Buy(arg:Token): Unit = {
-    if (_token.amount >= arg.amount) {
-      _token = _token - arg
-      _fiat = arg.amount * GetTokenPrice()
-    }
-    else {
-
-    }
-  }
-  override def Sell(arg:Token): Unit = {
-    _token += arg
-    _fiat -= arg.amount * GetTokenPrice()
+  override def Sell(arg: Token): Unit = this.synchronized {
+    val newAmount = _token.Amount + arg.Amount
+    _token = new Token(newAmount, _token.Symb)
   }
 }
