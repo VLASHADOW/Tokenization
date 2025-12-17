@@ -18,11 +18,11 @@ object EnrollmentService {
 
       student.addCourse(course)
 
-      println(s"[Thread-${Thread.currentThread().getId}] ${student.firstName} успішно записався на курс '${course.title}'.")
+      println(s"[Thread-${Thread.currentThread().threadId()}] ${student.firstName} успішно записався на курс '${course.title}'.")
       true
     }
     else {
-      println(s"[Thread-${Thread.currentThread().getId}] ПОМИЛКА: ${student.firstName} не зміг оплатити курс.")
+      println(s"[Thread-${Thread.currentThread().threadId()}] ПОМИЛКА: ${student.firstName} не зміг оплатити курс.")
       false
     }
   }
